@@ -186,7 +186,7 @@ def main():
                 speed_per_client = DEFAULT_SPEED_LIMIT
 
             print(
-                f"Active clients: {num_active}. Speed per client: {speed_per_client} kB/s"
+                f"\tActive clients: {num_active}. Speed per client: {speed_per_client} kB/s"
             )
 
             if "sabnzbd" in active_clients:
