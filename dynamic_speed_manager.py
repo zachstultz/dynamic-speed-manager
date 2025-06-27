@@ -158,6 +158,7 @@ def main():
 
     deluge_client = get_deluge_client()
     qb_client = get_qbittorrent_client()
+    previous_active_clients = []
 
     while True:
         try:
@@ -168,6 +169,12 @@ def main():
                 active_clients.append("deluge")
             if is_qbittorrent_downloading(qb_client):
                 active_clients.append("qbittorrent")
+
+            if active_clients and active_clients == previous_active_clients:
+                time.sleep(5)
+                continue
+
+            previous_active_clients = active_clients
 
             num_active = len(active_clients)
 
