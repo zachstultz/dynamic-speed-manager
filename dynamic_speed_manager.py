@@ -156,6 +156,8 @@ def set_qbittorrent_speed(client, speed):
 def main():
     """Main loop to monitor clients and adjust speeds."""
 
+    print("Starting dynamic speed manager...")
+
     deluge_client = get_deluge_client()
     qb_client = get_qbittorrent_client()
     previous_active_clients = []
@@ -180,11 +182,12 @@ def main():
 
             if num_active > 0:
                 speed_per_client = TOTAL_SPEED_LIMIT // num_active
-                print(
-                    f"Active clients: {num_active}. Speed per client: {speed_per_client} kB/s"
-                )
             else:
                 speed_per_client = DEFAULT_SPEED_LIMIT
+
+            print(
+                f"Active clients: {num_active}. Speed per client: {speed_per_client} kB/s"
+            )
 
             if "sabnzbd" in active_clients:
                 set_sabnzbd_speed(speed_per_client)
