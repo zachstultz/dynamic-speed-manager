@@ -156,11 +156,11 @@ def set_qbittorrent_speed(client, speed):
 def main():
     """Main loop to monitor clients and adjust speeds."""
 
+    deluge_client = get_deluge_client()
+    qb_client = get_qbittorrent_client()
+
     while True:
         try:
-            deluge_client = get_deluge_client()
-            qb_client = get_qbittorrent_client()
-
             active_clients = []
             if is_sabnzbd_downloading():
                 active_clients.append("sabnzbd")
