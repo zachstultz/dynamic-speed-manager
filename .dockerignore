@@ -1,0 +1,17 @@
+# Ignored Files
+tests.py
+READMETEMPLATE.md
+README.md
+
+# Ignore files inside these folders
+logs/*
+
+# Ignored Directories
+venv/
+misc/
+
+# Ignore hidden files and directories
+.*
+
+# Ignore folders and files starting with an underscore
+_*
