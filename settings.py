@@ -1,0 +1,22 @@
+# --- Configuration ---
+
+# SABnzbd settings
+SABNZBD_HOST = ""
+SABNZBD_PORT = 8080
+SABNZBD_API_KEY = ""
+
+# Deluge settings
+DELUGE_HOST = ""
+DELUGE_PORT = 58846
+DELUGE_USER = ""
+DELUGE_PASSWORD = ""
+
+# qBittorrent settings
+QBITTORRENT_HOST = ""
+QBITTORRENT_PORT = 8080
+QBITTORRENT_USER = ""
+QBITTORRENT_PASSWORD = ""
+
+# Speed settings (in kB/s)
+TOTAL_SPEED_LIMIT = 2250
+DEFAULT_SPEED_LIMIT = 750
