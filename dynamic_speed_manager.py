@@ -172,7 +172,9 @@ def main():
             if is_qbittorrent_downloading(qb_client):
                 active_clients.append("qbittorrent")
 
-            if active_clients and active_clients == previous_active_clients:
+            if (
+                active_clients and previous_active_clients
+            ) and active_clients == previous_active_clients:
                 time.sleep(5)
                 continue
 
