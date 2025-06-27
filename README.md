@@ -1,2 +1,1 @@
-# dynamic-speed-manager
-Manages the download speed between sabnzbd, qbittorrent, and deluge.
+This is a personal backup. There will be no support.
