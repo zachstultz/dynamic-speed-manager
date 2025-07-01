@@ -22,7 +22,7 @@ def is_sabnzbd_downloading():
         # Silently fail if SABnzbd is offline
         return False
     except (KeyError, ValueError):
-        print("Error: Unexpected JSON from SABnzbd. Please check version/API.")
+        print("\tError: Unexpected JSON from SABnzbd. Please check version/API.")
         return False
 
 
@@ -50,7 +50,7 @@ def get_deluge_client():
         return client
     except Exception as e:
         # Catch any exception during connection and report it
-        print(f"Could not connect to Deluge: {e}")
+        print(f"\tCould not connect to Deluge: {e}")
         return None
 
 
@@ -97,10 +97,10 @@ def get_qbittorrent_client():
         print("Successfully connected to qBittorrent.")
         return client
     except APIConnectionError as e:
-        print(f"Could not connect to qBittorrent: {e}")
+        print(f"\tCould not connect to qBittorrent: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred connecting to qBittorrent: {e}")
+        print(f"\tAn unexpected error occurred connecting to qBittorrent: {e}")
         return None
 
 
@@ -156,7 +156,7 @@ def main():
                     _ = qb_client.app.version
                     is_qb_connected = True
                 except APIConnectionError:
-                    print("qBittorrent connection lost. Will attempt to reconnect.")
+                    print("\tqBittorrent connection lost. Will attempt to reconnect.")
 
             if not is_qb_connected:
                 qb_client = get_qbittorrent_client()
@@ -210,8 +210,8 @@ def main():
             time.sleep(5)
 
         except Exception as e:
-            print(f"A critical error occurred in the main loop: {e}")
-            print("Restarting loop in 15 seconds...")
+            print(f"\tA critical error occurred in the main loop: {e}")
+            print("\tRestarting loop in 15 seconds...")
             time.sleep(15)
 
 
