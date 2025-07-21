@@ -20,3 +20,9 @@ QBITTORRENT_PASSWORD = ""
 # Speed settings (in kB/s)
 TOTAL_SPEED_LIMIT = 3000
 DEFAULT_SPEED_LIMIT = 1000
+
+# If present, the script will only check your download clients
+# if there are files/folders in these directories, otherwise it will not check.
+#
+# Helps avoid unnecessary API calls when no downloads are present
+watched_folder_paths = []
