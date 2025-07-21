@@ -166,11 +166,14 @@ def main():
             # --- Check if watched folders have content ---
             if watched_folder_paths:
                 has_content = any(
-                    [
-                        item
-                        for item in os.listdir(path)
-                        if not os.path.basename(item).startswith(".")
-                    ]
+                    # For each path in watched_folder_paths
+                    any(
+                        # For each file found by os.walk in that path's tree
+                        not file.startswith(".")
+                        and os.path.isfile(os.path.join(dirpath, file))
+                        for dirpath, dirnames, filenames in os.walk(path)
+                        for file in filenames
+                    )
                     for path in watched_folder_paths
                 )
 
