@@ -1,5 +1,7 @@
 import time
 import requests
+import os
+
 from deluge_client import DelugeRPCClient
 from qbittorrentapi import Client as qBittorrentClient
 from qbittorrentapi.exceptions import APIConnectionError
@@ -160,6 +162,21 @@ def main():
 
             if not is_qb_connected:
                 qb_client = get_qbittorrent_client()
+
+            # --- Check if watched folders have content ---
+            if watched_folder_paths:
+                has_content = any(
+                    [
+                        item
+                        for item in os.listdir(path)
+                        if not os.path.basename(item).startswith(".")
+                    ]
+                    for path in watched_folder_paths
+                )
+
+                if not has_content:
+                    time.sleep(5)
+                    continue
 
             # --- Status Checking ---
             active_clients = []
