@@ -58,14 +58,27 @@ def get_deluge_client():
 
 
 def is_deluge_downloading(client):
-    """Checks if Deluge has active downloads."""
+    """Checks if Deluge has active downloads, ignoring stalled torrents."""
     if not client or not client.connected:
         return False
     try:
+        # Request download_payload_rate to determine if torrents are actually transferring
         torrents = client.call(
-            "core.get_torrents_status", {"state": "Downloading"}, ["name"]
+            "core.get_torrents_status",
+            {"state": "Downloading"},
+            ["name", "download_payload_rate"],
         )
-        return bool(torrents)
+        if not torrents:
+            return False
+
+        # Check if any torrent has an active download rate (not stalled)
+        for torrent_id, torrent_info in torrents.items():
+            download_rate = torrent_info.get("download_payload_rate", 0)
+            # If download rate is greater than 0, it's actively downloading
+            if download_rate > 0:
+                return True
+        # All torrents are stalled (zero download rate)
+        return False
     except Exception:
         # If any error occurs during the API call (e.g., connection dropped),
         # assume it's not downloading.
@@ -107,8 +120,21 @@ def get_qbittorrent_client():
         return None
 
 
+def is_qbittorrent_stalled(torrent_state):
+    """Determines if a qbittorrent torrent is stalled based on its state."""
+    # qBittorrent stalled states
+    stalled_states = [
+        "stalledDL",  # Stalled in download mode (no peers/seeds)
+        "metaDL",  # Downloading metadata (not actual content yet)
+        "queuedDL",  # Queued for download (not actively transferring)
+        "checkingDL",  # Checking files before download
+        "checkingResumeData",  # Checking resume data
+    ]
+    return torrent_state in stalled_states
+
+
 def is_qbittorrent_downloading(client):
-    """Checks for actively downloading torrents, ignoring paused ones."""
+    """Checks for actively downloading torrents, ignoring paused and stalled ones."""
     if not client:
         return False
     try:
@@ -116,8 +142,14 @@ def is_qbittorrent_downloading(client):
         if not downloading_torrents:
             return False
         for torrent in downloading_torrents:
-            if torrent["state"] not in ["pausedDL", "stoppedDL"]:
-                return True
+            state = torrent["state"]
+            # Skip paused, stopped, and stalled torrents
+            if state in ["pausedDL", "stoppedDL"]:
+                continue
+            if is_qbittorrent_stalled(state):
+                continue
+            # This torrent is actively downloading
+            return True
         return False
     except APIConnectionError:
         return False
