@@ -13,20 +13,42 @@ from settings import *
 # --- SABnzbd Functions ---
 
 
-def is_sabnzbd_downloading():
+def check_sabnzbd_connection():
+    """Checks if SABnzbd is reachable and the API key is valid."""
+    try:
+        url = f"http://{SABNZBD_HOST}:{SABNZBD_PORT}/sabnzbd/api?mode=version&apikey={SABNZBD_API_KEY}&output=json"
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        if "version" in data:
+            print(f"Successfully connected to SABnzbd.")
+            return True
+        else:
+            print("\tCould not connect to SABnzbd: Invalid API response.")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"\tCould not connect to SABnzbd: {e}")
+        return False
+
+
+def is_sabnzbd_downloading(is_connected):
     """Checks if SABnzbd has active downloads."""
+    if not is_connected:
+        return False, False
     try:
         url = f"http://{SABNZBD_HOST}:{SABNZBD_PORT}/sabnzbd/api?mode=queue&apikey={SABNZBD_API_KEY}&output=json"
         response = requests.get(url, timeout=5)
         response.raise_for_status()
         data = response.json()
-        return data.get("queue", {}).get("status") == "Downloading"
+        is_downloading = data.get("queue", {}).get("status") == "Downloading"
+        return is_downloading, True
     except requests.exceptions.RequestException:
-        # Silently fail if SABnzbd is offline
-        return False
+        # Connection was lost
+        print("\tSABnzbd connection lost. Will attempt to reconnect.")
+        return False, False
     except (KeyError, ValueError):
         print("\tError: Unexpected JSON from SABnzbd. Please check version/API.")
-        return False
+        return False, True  # Connection is OK, just bad response
 
 
 def set_sabnzbd_speed(speed):
@@ -172,6 +194,7 @@ def main():
     """Main loop to monitor clients and adjust speeds with graceful reconnection."""
     print("Starting dynamic speed manager...")
 
+    sabnzbd_connected = False
     deluge_client = None
     qb_client = None
     previous_active_clients = []
@@ -179,6 +202,10 @@ def main():
     while True:
         try:
             # --- Proactive Connection Management ---
+            # Check SABnzbd connection and reconnect if needed
+            if not sabnzbd_connected:
+                sabnzbd_connected = check_sabnzbd_connection()
+
             # Check Deluge connection and reconnect if needed
             if not deluge_client or not deluge_client.connected:
                 deluge_client = get_deluge_client()
@@ -216,8 +243,14 @@ def main():
 
             # --- Status Checking ---
             active_clients = []
-            if is_sabnzbd_downloading():
+            sabnzbd_downloading, sabnzbd_connection_ok = is_sabnzbd_downloading(
+                sabnzbd_connected
+            )
+            if sabnzbd_downloading:
                 active_clients.append("sabnzbd")
+            if not sabnzbd_connection_ok:
+                # Only reset connection state if connection actually failed
+                sabnzbd_connected = False
             if is_deluge_downloading(deluge_client):
                 active_clients.append("deluge")
             if is_qbittorrent_downloading(qb_client):
