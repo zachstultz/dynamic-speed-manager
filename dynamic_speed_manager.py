@@ -130,7 +130,6 @@ def get_qbittorrent_client():
             port=QBITTORRENT_PORT,
             username=QBITTORRENT_USER,
             password=QBITTORRENT_PASSWORD,
-            VERIFY_WEBUI_CERTIFICATE=False,
         )
         client.auth_log_in()
         print("Successfully connected to qBittorrent.")
