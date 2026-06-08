@@ -1,8 +1,8 @@
-certifi==2025.6.15
-charset-normalizer==3.4.2
+certifi==2026.5.20
+charset-normalizer==3.4.7
 deluge-client==1.10.2
-idna==3.10
-packaging==25.0
-qbittorrent-api==2025.5.0
-requests==2.32.4
-urllib3==2.5.0
+idna==3.18
+packaging==26.2
+qbittorrent-api==2026.6.0
+requests==2.34.2
+urllib3==2.7.0
