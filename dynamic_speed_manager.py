@@ -2,6 +2,7 @@
 import time
 import requests
 import os
+import sys
 
 from deluge_client import DelugeRPCClient
 from qbittorrentapi import Client as qBittorrentClient
@@ -222,6 +223,12 @@ def main():
 
             if not is_qb_connected:
                 qb_client = get_qbittorrent_client()
+
+            # Check that all clients got connected, exit if any failed
+            if require_all_clients:
+                if not sabnzbd_connected or not deluge_client or not qb_client:
+                    print("Error: Not all clients are connected. Exiting.")
+                    sys.exit(1)
 
             # --- Check if watched folders have content ---
             if watched_folder_paths:
