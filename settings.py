@@ -1,5 +1,8 @@
 # --- Configuration ---
 
+# Whether or not to require all clients for script to continue
+require_all_clients = False
+
 # SABnzbd settings
 SABNZBD_HOST = ""
 SABNZBD_PORT = 8080
